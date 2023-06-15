@@ -3,14 +3,18 @@ import Notiflix from 'notiflix';
 
 const input = document.getElementById("search-form");
 const gallery = document.getElementById("gallery");
+const loadMoreBtn = document.querySelector('.load-more');
 
 input.addEventListener('submit', onSubmit);
+loadMoreBtn.addEventListener('click', loadMore);
 
+// сабмит формы ввода поиска
 function onSubmit(e){
     e.preventDefault();
 
-    const query = input.elements.searchQuery.value.trim();
-    
+    query = input.elements.searchQuery.value.trim();
+
+    //первый запрос на сервер
     getImages(query)
     .then(json => {
         if (json.length === 0) {
@@ -22,9 +26,28 @@ function onSubmit(e){
       })
     .then(markup => addMarkup(markup))
     .catch(error => onError(error))
-    .finally(() => input.reset());
+    return query
 }
 
+//еще один запрос на сервер за фотографиями
+function loadMore (e){
+
+    console.log(query)
+    
+    getImages(query)
+    .then(json => {
+        if (json.length === 0) {
+          // делаем проверку данных
+          throw new Error();
+        }
+        //если данные есть - рендерим разметку
+       return createMarkup(json.hits)
+      })
+    .then(markup => addNewMarkup(markup))
+    .catch(error => onError(error))
+}
+
+//функция создания разметки - принимает массив, возвращает строку разметки
 function createMarkup(images){
     const markup = images
     .map((image) => {
@@ -52,12 +75,18 @@ function createMarkup(images){
     return markup
 }
 
-// функция вывода ошибки
-function onError(){
-  Notiflix.Notify.failure('Sorry, there are no images matching your search query. Please try again.')
-}
-
 // функция вставить разметку 
 function addMarkup(markup){
     gallery.innerHTML = markup; 
+    loadMoreBtn.classList.remove('visually-hidden')
 }
+
+// функция - вставить дополнительные фотографии 
+function addNewMarkup(markup){
+    gallery.insertAdjacentHTML("appendchild", markup);
+}
+
+// функция вывода ошибки
+function onError(){
+    Notiflix.Notify.failure('Sorry, there are no images matching your search query. Please try again.')
+  }
