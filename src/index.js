@@ -12,21 +12,36 @@ console.log(getImagesApi);
 input.addEventListener('submit', onSubmit);
 loadMoreBtn.addEventListener('click', loadMore);
 
-// сабмит формы ввода поиска
+// сабмит формы ввода 
 function onSubmit(e){
     e.preventDefault();
 
+    // при сабмите формы очищаем галерею
+    clearGalleryContainer()
+
+    // присваиваем значение инпута
     getImagesApi.query = input.elements.searchQuery.value.trim();
+
+    // проверка на пусутю строку -> выводим алерт 
+    if (getImagesApi.query === "") {
+        return alert(`Пустая строка! Введите слово для поиска!`);
+    }
+    
+    // при сабмите сбрасываем номер странички 
     getImagesApi.resetPage();
 
-    //первый запрос на сервер
+    // первый запрос на сервер
     getImagesApi.getImages()
     .then(json => {
-        if (json.length === 0) {
-          // делаем проверку данных
+
+        console.log(json);
+
+        // делаем проверку данных
+        if (json.hits.length === 0) {
+          // если данных нет - выкидываем ошибку 
           throw new Error();
         }
-        //если данные есть - рендерим разметку
+        // если данные есть - рендерим разметку
        return createMarkup(json.hits)
       })
     .then(markup => addMarkup(markup))
@@ -36,14 +51,18 @@ function onSubmit(e){
 //еще один запрос на сервер
 function loadMore (e){
     
+    loadMoreBtn.classList.add('visually-hidden')
     getImagesApi.getImages()
     .then(json => {
-        if (json.length === 0) {
-          // делаем проверку данных
+
+        // делаем проверку данных
+        if (json.hits.length === 0) {
+          // если данных нет - выкидываем ошибку 
           throw new Error();
         }
+        loadMoreBtn.classList.remove('visually-hidden')
         //если данные есть - рендерим разметку
-       return createMarkup(json.hits)
+        return createMarkup(json.hits)
       })
     .then(markup => addNewMarkup(markup))
     .catch(error => onError(error))
@@ -77,7 +96,7 @@ function createMarkup(images){
     return markup
 }
 
-// функция вставить разметку 
+// функция вставить фото из первого запроса
 function addMarkup(markup){
     gallery.innerHTML = markup; 
     loadMoreBtn.classList.remove('visually-hidden')
@@ -86,6 +105,12 @@ function addMarkup(markup){
 // функция - вставить дополнительные фотографии 
 function addNewMarkup(markup){
     gallery.insertAdjacentHTML("beforeend", markup);
+}
+
+//функция очистить разметку 
+
+function clearGalleryContainer(){
+    gallery.innerHTML = ""; 
 }
 
 // функция вывода ошибки
