@@ -1,9 +1,13 @@
-import { getImages } from './API.js';
+import GetImagesApi from './API.js';
 import Notiflix from 'notiflix';
 
 const input = document.getElementById("search-form");
 const gallery = document.getElementById("gallery");
 const loadMoreBtn = document.querySelector('.load-more');
+
+const getImagesApi = new GetImagesApi();
+
+console.log(getImagesApi);
 
 input.addEventListener('submit', onSubmit);
 loadMoreBtn.addEventListener('click', loadMore);
@@ -12,10 +16,11 @@ loadMoreBtn.addEventListener('click', loadMore);
 function onSubmit(e){
     e.preventDefault();
 
-    query = input.elements.searchQuery.value.trim();
+    getImagesApi.query = input.elements.searchQuery.value.trim();
+    getImagesApi.resetPage();
 
     //первый запрос на сервер
-    getImages(query)
+    getImagesApi.getImages()
     .then(json => {
         if (json.length === 0) {
           // делаем проверку данных
@@ -26,15 +31,12 @@ function onSubmit(e){
       })
     .then(markup => addMarkup(markup))
     .catch(error => onError(error))
-    return query
 }
 
-//еще один запрос на сервер за фотографиями
+//еще один запрос на сервер
 function loadMore (e){
-
-    console.log(query)
     
-    getImages(query)
+    getImagesApi.getImages()
     .then(json => {
         if (json.length === 0) {
           // делаем проверку данных
@@ -83,7 +85,7 @@ function addMarkup(markup){
 
 // функция - вставить дополнительные фотографии 
 function addNewMarkup(markup){
-    gallery.insertAdjacentHTML("appendchild", markup);
+    gallery.insertAdjacentHTML("beforeend", markup);
 }
 
 // функция вывода ошибки
