@@ -22,7 +22,7 @@ function onSubmit(e){
     // присваиваем значение инпута
     getImagesApi.query = input.elements.searchQuery.value.trim();
 
-    // проверка на пусутю строку -> выводим алерт 
+    // проверка на пустую строку -> выводим алерт 
     if (getImagesApi.query === "") {
         return alert(`Пустая строка! Введите слово для поиска!`);
     }
@@ -46,6 +46,8 @@ function onSubmit(e){
       })
     .then(markup => addMarkup(markup))
     .catch(error => onError(error))
+      // очищаем форму поиска
+    .finally(() => input.reset())
 }
 
 //еще один запрос на сервер
@@ -108,7 +110,6 @@ function addNewMarkup(markup){
 }
 
 //функция очистить разметку 
-
 function clearGalleryContainer(){
     gallery.innerHTML = ""; 
 }
@@ -117,3 +118,14 @@ function clearGalleryContainer(){
 function onError(){
     Notiflix.Notify.failure('Sorry, there are no images matching your search query. Please try again.')
   }
+
+// бесконечный скролл 
+window.addEventListener('scroll', handleScroll)
+
+function handleScroll() {
+  const { clientHeight, scrollTop, scrollHeight } = document.documentElement;
+
+  if (scrollTop + clientHeight >= scrollHeight - 5) {
+    loadMore();
+  }
+}
