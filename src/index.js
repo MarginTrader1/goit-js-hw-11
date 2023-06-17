@@ -1,5 +1,6 @@
 import GetImagesApi from './API.js';
 import Notiflix from 'notiflix';
+import throttle from "lodash.throttle";
 
 const input = document.getElementById("search-form");
 const gallery = document.getElementById("gallery");
@@ -19,6 +20,9 @@ function onSubmit(e){
     // при сабмите формы очищаем галерею
     clearGalleryContainer()
 
+    // прячем кнопку
+    loadMoreBtn.classList.add('visually-hidden')
+
     // присваиваем значение инпута
     getImagesApi.query = input.elements.searchQuery.value.trim();
 
@@ -27,7 +31,7 @@ function onSubmit(e){
         return alert(`Пустая строка! Введите слово для поиска!`);
     }
     
-    // при сабмите сбрасываем номер странички 
+    // сбрасываем номер странички 
     getImagesApi.resetPage();
 
     // первый запрос на сервер
@@ -67,7 +71,7 @@ function loadMore (e){
         return createMarkup(json.hits)
       })
     .then(markup => addNewMarkup(markup))
-    .catch(error => onError(error))
+    .catch(error => Notiflix.Notify.failure('We are sorry, but you have reached the end of search results.'))
 }
 
 //функция создания разметки - принимает массив, возвращает строку разметки
@@ -120,9 +124,12 @@ function onError(){
   }
 
 // бесконечный скролл 
-window.addEventListener('scroll', handleScroll)
+window.addEventListener('scroll', throttle(handleScroll, 1000))
 
 function handleScroll() {
+
+  console.dir(document.documentElement);
+
   const { clientHeight, scrollTop, scrollHeight } = document.documentElement;
 
   if (scrollTop + clientHeight >= scrollHeight - 5) {
