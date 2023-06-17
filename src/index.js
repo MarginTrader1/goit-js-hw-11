@@ -128,11 +128,14 @@ window.addEventListener('scroll', throttle(handleScroll, 1000))
 
 function handleScroll() {
 
-  console.dir(document.documentElement);
+  // console.dir(document.documentElement);
+  // console.log(document.documentElement.scrollTop);
+  // console.log(document.documentElement.clientHeight);
+  // console.log(document.documentElement.scrollHeight);
 
   const { clientHeight, scrollTop, scrollHeight } = document.documentElement;
 
-  if (scrollTop + clientHeight >= scrollHeight - 5) {
+  if (scrollTop + clientHeight >= scrollHeight - 1) {
     loadMore();
   }
 }
