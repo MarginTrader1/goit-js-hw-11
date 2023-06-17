@@ -26,7 +26,6 @@ import axios from "axios";
         return response.data
         }
     
-
     resetPage() {
       this.page = 1;
     }
@@ -44,9 +43,6 @@ import axios from "axios";
     }
   }
 
-
-
-  
   // запрос на сервер без AXIOS
 
   // export default class GetImagesApi {

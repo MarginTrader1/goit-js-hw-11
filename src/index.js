@@ -1,6 +1,8 @@
 import GetImagesApi from './API.js';
 import Notiflix from 'notiflix';
 import throttle from "lodash.throttle";
+import SimpleLightbox from "simplelightbox"
+import "simplelightbox/dist/simple-lightbox.min.css";
 
 const input = document.getElementById("search-form");
 const gallery = document.getElementById("gallery");
@@ -13,45 +15,45 @@ console.log(getImagesApi);
 input.addEventListener('submit', onSubmit);
 loadMoreBtn.addEventListener('click', loadMore);
 
-// сабмит формы ввода 
+// сабмит формы ввода - без async/await
 function onSubmit(e){
-    e.preventDefault();
+  e.preventDefault();
 
-    // при сабмите формы очищаем галерею
-    clearGalleryContainer()
+  // при сабмите формы очищаем галерею
+  clearGalleryContainer()
 
-    // прячем кнопку
-    loadMoreBtn.classList.add('visually-hidden')
+  // прячем кнопку
+  loadMoreBtn.classList.add('visually-hidden')
 
-    // присваиваем значение инпута
-    getImagesApi.query = input.elements.searchQuery.value.trim();
+  // присваиваем значение инпута
+  getImagesApi.query = input.elements.searchQuery.value.trim();
 
-    // проверка на пустую строку -> выводим алерт 
-    if (getImagesApi.query === "") {
-        return alert(`Пустая строка! Введите слово для поиска!`);
-    }
-    
-    // сбрасываем номер странички 
-    getImagesApi.resetPage();
+  // проверка на пустую строку -> выводим алерт 
+  if (getImagesApi.query === "") {
+      return alert(`Пустая строка! Введите слово для поиска!`);
+  }
 
-    // первый запрос на сервер
-    getImagesApi.getImages()
-    .then(json => {
+  // сбрасываем номер странички 
+  getImagesApi.resetPage();
 
-        console.log(json);
+  // первый запрос на сервер
+  getImagesApi.getImages()
+  .then(json => {
 
-        // делаем проверку данных
-        if (json.hits.length === 0) {
-          // если данных нет - выкидываем ошибку 
-          throw new Error();
-        }
-        // если данные есть - рендерим разметку
-       return createMarkup(json.hits)
-      })
-    .then(markup => addMarkup(markup))
-    .catch(error => onError(error))
-      // очищаем форму поиска
-    .finally(() => input.reset())
+      console.log(json);
+
+      // делаем проверку данных
+      if (json.hits.length === 0) {
+        // если данных нет - выкидываем ошибку 
+        throw new Error();
+      }
+      // если данные есть - рендерим разметку
+      return createMarkup(json.hits)
+    })
+  .then(markup => addMarkup(markup))
+  .catch(() => onError())
+    // очищаем форму поиска
+  .finally(() => input.reset())
 }
 
 //еще один запрос на сервер
@@ -71,7 +73,7 @@ function loadMore (e){
         return createMarkup(json.hits)
       })
     .then(markup => addNewMarkup(markup))
-    .catch(error => Notiflix.Notify.failure('We are sorry, but you have reached the end of search results.'))
+    .catch(() => Notiflix.Notify.failure('We are sorry, but you have reached the end of search results.'))
 }
 
 //функция создания разметки - принимает массив, возвращает строку разметки
@@ -80,7 +82,7 @@ function createMarkup(images){
     .map((image) => {
       return `
       <div class="photo-card">
-        <img src="${image.webformatURL}" alt="${image.tags}" loading="lazy" />
+        <img src="${image.webformatURL}" alt="${image.tags}" loading="lazy" /></a>
         <div class="info">
             <p class="info-item">
                 <b>Likes:</b> ${image.likes}
@@ -95,7 +97,7 @@ function createMarkup(images){
                 <b>Downloads:</b> ${image.downloads}
             </p>
         </div>
-       </div>
+      </div>
       `;
     })
     .join("");
