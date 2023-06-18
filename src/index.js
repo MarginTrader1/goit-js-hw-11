@@ -73,8 +73,13 @@ function onSubmit(e){
       // если данные есть - рендерим разметку
 
       Notiflix.Report.success(`Hooray! We found ${loadedPhotos} images.`);
+
+      // показываем кнопку
       loadMoreBtn.classList.remove('visually-hidden')
+
+      // добавляем скролл
       window.addEventListener('scroll', handleScroll)
+
       return createMarkup(json.hits)
     })
   .then(markup => addMarkup(markup))
@@ -187,7 +192,6 @@ function deleteLoadedPhotos () {
 }
 
 // бесконечный скролл 
-
 
 function handleScroll() {
 
