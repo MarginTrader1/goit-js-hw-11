@@ -73,6 +73,7 @@ function onSubmit(e){
       // если данные есть - рендерим разметку
 
       Notiflix.Report.success(`Hooray! We found ${loadedPhotos} images.`);
+      loadMoreBtn.classList.remove('visually-hidden')
       return createMarkup(json.hits)
     })
   .then(markup => addMarkup(markup))
@@ -101,6 +102,7 @@ function loadMore (e){
         
         // сравниваем количество загруженных фотографий с общим количеством фотографий
         if (loadedPhotos >= json.totalHits) {
+          
           loadMoreBtn.classList.add('visually-hidden')
 
           // выводим сообщение
@@ -156,7 +158,6 @@ function createMarkup(images){
 // функция вставить фото из первого запроса
 function addMarkup(markup){
     gallery.innerHTML = markup; 
-    loadMoreBtn.classList.remove('visually-hidden')
 }
 
 // функция - вставить дополнительные фотографии 
