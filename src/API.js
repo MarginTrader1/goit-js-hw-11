@@ -8,8 +8,9 @@ import axios from "axios";
       this.searchQuery = "";
       this.page = 1;
     }
-      // функция запроса на сервер
-      async getImages(){
+
+    // функция запроса на сервер
+    async getImages(){
 
         console.log(this);
 
