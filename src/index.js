@@ -52,6 +52,24 @@ function onSubmit(e){
         // если данных нет - выкидываем ошибку 
         throw new Error();
       }
+
+      // сравниваем количество загруженных фотографий с общим количеством фотографий
+      if (loadedPhotos >= json.totalHits) {
+        loadMoreBtn.classList.add('visually-hidden')
+
+        // выводим сообщение
+        Notiflix.Notify.info(`We found ${loadedPhotos} images and you have reached the end of search results.`)
+
+        //убираем бесконечный сролл
+        window.removeEventListener('scroll', handleScroll)
+
+        // обнуляем фото
+        deleteLoadedPhotos ()
+
+        // возвращаем разметку
+        return createMarkup(json.hits)
+      } 
+
       // если данные есть - рендерим разметку
 
       Notiflix.Report.success(`Hooray! We found ${loadedPhotos} images.`);
