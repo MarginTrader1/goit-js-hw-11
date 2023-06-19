@@ -12,17 +12,21 @@ let loadedPhotos = 0;
 
 const getImagesApi = new GetImagesApi();
 
-// console.log(getImagesApi);
-
 input.addEventListener('submit', onSubmit);
 loadMoreBtn.addEventListener('click', loadMore);
 
-// сабмит формы ввода - без async/await
+// первый запрос на сервер и сабмит формы ввода
 function onSubmit(e){
   e.preventDefault();
 
   // при сабмите формы очищаем галерею
   clearGalleryContainer()
+
+  // обнуляем фото
+  deleteLoadedPhotos ()
+
+  // сбрасываем номер странички 
+  getImagesApi.resetPage();
 
   // прячем кнопку
   loadMoreBtn.classList.add('visually-hidden')
@@ -35,23 +39,18 @@ function onSubmit(e){
       return alert(`Пустая строка! Введите слово для поиска!`);
   }
 
-  // сбрасываем номер странички 
-  getImagesApi.resetPage();
-
   // первый запрос на сервер
   getImagesApi.getImages()
   .then(json => {
 
-      console.log(json);
-
-      // увеличиваем количество загруженных фотографий
-      addLoadedPhotos(json.hits.length);
-      
       // делаем проверку данных
       if (json.hits.length === 0) {
         // если данных нет - выкидываем ошибку 
         throw new Error();
       }
+
+      // увеличиваем количество загруженных фотографий
+      addLoadedPhotos(json.hits.length);
 
       // сравниваем количество загруженных фотографий с общим количеством фотографий
       if (loadedPhotos >= json.totalHits) {
@@ -59,9 +58,6 @@ function onSubmit(e){
 
         // выводим сообщение
         Notiflix.Notify.info(`We found ${loadedPhotos} images and you have reached the end of search results.`)
-
-        //убираем бесконечный сролл
-        window.removeEventListener('scroll', handleScroll)
 
         // обнуляем фото
         deleteLoadedPhotos ()
@@ -71,15 +67,10 @@ function onSubmit(e){
       } 
 
       // если данные есть - рендерим разметку
-
       Notiflix.Report.success(`Hooray! We found ${loadedPhotos} images.`);
 
       // показываем кнопку
       loadMoreBtn.classList.remove('visually-hidden')
-
-      // добавляем скролл
-      window.addEventListener('scroll', handleScroll)
-
       return createMarkup(json.hits)
     })
   .then(markup => addMarkup(markup))
@@ -94,17 +85,15 @@ function loadMore (e){
     loadMoreBtn.classList.add('visually-hidden')
     getImagesApi.getImages()
     .then(json => {
-        console.log(json);
-
-        // увеличиваем количество загруженных фотографий
-        addLoadedPhotos(json.hits.length);
-        console.log(loadedPhotos);
 
         // делаем проверку данных
         if (json.hits.length === 0) {
           // если данных нет - выкидываем ошибку 
           throw new Error();
         } 
+
+        // увеличиваем количество загруженных фотографий
+        addLoadedPhotos(json.hits.length);
         
         // сравниваем количество загруженных фотографий с общим количеством фотографий
         if (loadedPhotos >= json.totalHits) {
@@ -114,15 +103,10 @@ function loadMore (e){
           // выводим сообщение
           Notiflix.Notify.info(`We found ${loadedPhotos} images and you have reached the end of search results.`)
 
-          //убираем бесконечный сролл
-          window.removeEventListener('scroll', handleScroll)
-
-          // обнуляем фото
-          deleteLoadedPhotos ()
-
           // возвращаем разметку
           return createMarkup(json.hits)
         } 
+
         loadMoreBtn.classList.remove('visually-hidden')
         Notiflix.Report.success(`Hooray! We found ${loadedPhotos} images.`);
         //если данные есть - рендерим разметку
@@ -191,18 +175,18 @@ function deleteLoadedPhotos () {
   loadedPhotos = 0;
 }
 
-// бесконечный скролл 
+// бесконечный скролл - потом переделать
 
-function handleScroll() {
+// function handleScroll() {
 
-  // console.dir(document.documentElement);
-  // console.log(document.documentElement.scrollTop);
-  // console.log(document.documentElement.clientHeight);
-  // console.log(document.documentElement.scrollHeight);
+//   // console.dir(document.documentElement);
+//   // console.log(document.documentElement.scrollTop);
+//   // console.log(document.documentElement.clientHeight);
+//   // console.log(document.documentElement.scrollHeight);
 
-  const { clientHeight, scrollTop, scrollHeight } = document.documentElement;
+//   const { clientHeight, scrollTop, scrollHeight } = document.documentElement;
 
-  if (scrollTop + clientHeight >= scrollHeight - 1) {
-    loadMore();
-  }
-}
+//   if (scrollTop + clientHeight >= scrollHeight - 1) {
+//     loadMore();
+//   }
+// }

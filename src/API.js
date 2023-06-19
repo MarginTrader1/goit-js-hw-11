@@ -12,7 +12,7 @@ import axios from "axios";
     // функция запроса на сервер
     async getImages(){
 
-        console.log(this);
+        // console.log(this);
 
         const key = '37349612-6a9d2bc1c1c870fef97dab380';
         const url = `https://pixabay.com/api/?key=${key}&q=${this.searchQuery}&image_type=photo&orientation=horizontal&safesearch=true&per_page=40&page=${this.page}`;
