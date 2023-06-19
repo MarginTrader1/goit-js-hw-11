@@ -67,7 +67,7 @@ function onSubmit(e){
       } 
 
       // если данные есть - рендерим разметку
-      Notiflix.Report.success(`Hooray! We found ${loadedPhotos} images.`);
+      Notiflix.Notify.success(`Hooray! We found ${loadedPhotos} images.`);
 
       // показываем кнопку
       loadMoreBtn.classList.remove('visually-hidden')
@@ -108,7 +108,7 @@ function loadMore (e){
         } 
 
         loadMoreBtn.classList.remove('visually-hidden')
-        Notiflix.Report.success(`Hooray! We found ${loadedPhotos} images.`);
+        Notiflix.Notify.success(`Hooray! We found ${loadedPhotos} images.`);
         //если данные есть - рендерим разметку
         return createMarkup(json.hits)
       })
