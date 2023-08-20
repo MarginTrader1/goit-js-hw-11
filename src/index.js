@@ -52,6 +52,9 @@ function onSubmit(e) {
       // увеличиваем количество загруженных фотографий
       addLoadedPhotos(json.hits.length);
 
+      console.log(json);
+      console.log(json.totalHits);
+
       // сравниваем количество загруженных фотографий с общим количеством фотографий
       if (loadedPhotos >= json.totalHits) {
         loadMoreBtn.classList.add('visually-hidden');
